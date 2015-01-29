@@ -39,7 +39,7 @@ There is a large number of methods for that. The following ones are implemented 
 > git clone https://github.com/joaopalotti/readability_calculator.git
 ```
 
-2. Install dependences (See above)
+2. Install dependencies (See above)
 3. Command Line:
 ```bashh
 > python readaCalc.py <TEXT>
