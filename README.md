@@ -46,9 +46,9 @@ There is a large number of methods for that. The following ones are implemented 
 ```
 4. Using inside you program:
 ```python
-from readCalc impor readCalc
+from readCalc import readCalc
 calc = readCalc("This is a simple text.")
-calc.get_flesch_kincaid_grade_levemog_index()
+calc.get_smog_index()
 > 3.1291
 ```
 
