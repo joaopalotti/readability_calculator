@@ -2,7 +2,7 @@
 ------------------------
 
 Readability calculator is a simple program to estimate how skilled a reader must be to understand a piece of text.
-There are a large number of methods for that. The following ones are implemented in the current version of this program:
+There is a large number of methods for that. The following ones are implemented in the current version of this program:
 
 1. [Flesh Reading Ease] (http://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_test#Flesch_Reading_Ease)
 2. [Flesh Kincaid Grade Level] (http://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_Grade_Level#Flesch.E2.80.93Kincaid_Grade_Level)
@@ -13,13 +13,13 @@ There are a large number of methods for that. The following ones are implemented
 7. [LIX Index] (http://en.wikipedia.org/wiki/LI)
 8. [Dale-Chall Score] (http://en.wikipedia.org/wiki/Dale%E2%80%93Chall_readability_formula)
 
-# Dependences
+# Dependencies
 -------------
 
 * [Pyphen] (https://github.com/Kozea/Pyphen) 
 
 ```bash
-> git clone https://github.com/joaopalotti/readability_calculator.git
+> pip install pyphen
 ```
 
 * [NLTK] (https://github.com/nltk/nltk)
@@ -39,16 +39,16 @@ There are a large number of methods for that. The following ones are implemented
 > git clone https://github.com/joaopalotti/readability_calculator.git
 ```
 
-2. Install dependences (See above)
+2. Install dependencies (See above)
 3. Command Line:
 ```bashh
 > python readaCalc.py <TEXT>
 ```
 4. Using inside you program:
 ```python
-from readCalc impor readCalc
+from readCalc import readCalc
 calc = readCalc("This is a simple text.")
-calc.get_flesch_kincaid_grade_levemog_index()
+calc.get_smog_index()
 > 3.1291
 ```
 
