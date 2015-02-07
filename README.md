@@ -36,15 +36,9 @@ There is a large number of methods for that. The following ones are implemented 
 
 1. Download it:
 ```bash    
-> git clone https://github.com/joaopalotti/readability_calculator.git
+> pip install ReadabilityCalculator
 ```
-
-2. Install dependencies (See above)
-3. Command Line:
-```bashh
-> python readaCalc.py <TEXT>
-```
-4. Using inside you program:
+2. Using the library:
 ```python
 from readcalc import readcalc
 calc = readcalc.ReadCalc("This is a simple text.")
