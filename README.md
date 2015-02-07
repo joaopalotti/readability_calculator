@@ -46,8 +46,8 @@ There is a large number of methods for that. The following ones are implemented 
 ```
 4. Using inside you program:
 ```python
-from readCalc import readCalc
-calc = readCalc("This is a simple text.")
+from readcalc import readcalc
+calc = readcalc.ReadCalc("This is a simple text.")
 calc.get_smog_index()
 > 3.1291
 ```

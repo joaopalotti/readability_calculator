@@ -1,0 +1,12 @@
+LICENSE.txt
+MANIFEST.in
+README.txt
+setup.py
+ReadabilityCalculator.egg-info/PKG-INFO
+ReadabilityCalculator.egg-info/SOURCES.txt
+ReadabilityCalculator.egg-info/dependency_links.txt
+ReadabilityCalculator.egg-info/requires.txt
+ReadabilityCalculator.egg-info/top_level.txt
+readcalc/__init__.py
+readcalc/dalechallwords.py
+readcalc/readcalc.py
