@@ -34,7 +34,7 @@ There is a large number of methods for that. The following ones are implemented 
 # Using
 --------
 
-1. Download it:
+1. Download it ([Pypi link] (https://pypi.python.org/pypi/ReadabilityCalculator/)):
 ```bash    
 > pip install ReadabilityCalculator
 ```
