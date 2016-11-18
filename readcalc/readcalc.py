@@ -6,8 +6,8 @@ import re
 import math
 import sys
 
-import nltk
-from nltk.tokenize.punkt import PunktWordTokenizer
+from nltk import tokenize
+from preprocessing import preprocess_html
 
 import pyphen
 
@@ -16,10 +16,22 @@ from dalechallwords import dale_chall_words
 Author: Joao Palotti <joaopalotti@gmail.com>
 '''
 
-
 class ReadCalc:
 
-    def __init__(self, text):
+    def __init__(self, text, preprocesshtml=None):
+        """
+            ReadCalc(text, preprocesshtml = None).
+
+            preprocsshtml is used to remove html tags.
+            The current available options are:
+
+                - justext ---- recommended.
+                - bs4 (beautifulsoup4) ---- might result in encoding problems
+        """
+        try:
+            text = preprocess_html(text, preprocesshtml)
+        except Exception as e:
+            print "Error %s -- %s" % (type(e), e)
         self.analyse_text(text)
 
     def __repr__(self):
@@ -43,6 +55,7 @@ class ReadCalc:
         ret.append("Dale-Chall Score: %.3f" % (self.get_dale_chall_score()))
         return "\n".join(ret)
 
+
     def analyse_text(self, text):
         self.__text = text
         self.__sentences = self.__get_sentences()
@@ -57,8 +70,7 @@ class ReadCalc:
             self.__get_number_syllables()
 
     def __get_sentences(self):
-        tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-        sentences = tokenizer.tokenize(self.__text)
+        sentences = tokenize.sent_tokenize(self.__text)
 
         sentences_only_chars = []
         # Remove sentences containing only punctuation:
@@ -70,11 +82,12 @@ class ReadCalc:
 
     def __get_words(self):
 
-        words = [w.strip().lower() for w in PunktWordTokenizer().tokenize(self.__text) if w.strip()]
+        word_tokenizer = tokenize.TreebankWordTokenizer()
+        words = [w.strip() for w in word_tokenizer.tokenize(self.__text) if w.strip()]
 
         # Remove punctuation from words:
         # Ex.:  <<This is the final.>>  becomes
-        # ['<<This', 'is', 'the', 'final.>>'] -> [...,'final']
+        # ['<','<', 'This', 'is', 'the', 'final', '.', '>', '>'] -> ['This', 'is', 'the', 'final']
         words = [re.sub("\W", '', word) for word in words]
         words = [word for word in words if word]
 
@@ -82,7 +95,7 @@ class ReadCalc:
 
     def __get_number_chars(self):
         """
-            The list of words this method gets is a set of words without punctuation.
+            Returns the total number of chars in the text.
         """
         chars = 0
         for word in self.__words:
@@ -203,6 +216,45 @@ class ReadCalc:
         difficult_words = self.__get_dale_chall_difficult_words()
         return 0.1579 * (difficult_words / self.__number_words * 100.0) + 0.0496 * (self.__number_words / self.__number_sentences)
 
+    def get_sentences(self):
+        """
+            Returns the number of sentences found in the input text.
+        """
+        return self.__sentences
+
+    def get_words(self):
+        """
+            Returns the number of words found in the input text.
+        """
+        return self.__words
+
+    def get_internal_metrics(self):
+        """
+            Returns a tuple with:
+             (number_chars, number_words, number_sentences, number_syllables, number_polysyllable_words, difficult_words,
+                number_words_longer_4, number_words_longer_6, number_words_longer_10, number_words_longer_longer_13)
+        """
+        longer_4 = self.__get_words_longer_than_X(4)
+        longer_6 = self.__get_words_longer_than_X(6)
+        longer_10 = self.__get_words_longer_than_X(10)
+        longer_13 = self.__get_words_longer_than_X(13)
+        difficult_words = self.__get_dale_chall_difficult_words()
+        return self.__number_chars, self.__number_words, self.__number_sentences, self.__number_syllables,\
+                self.__number_polysyllable_words, difficult_words, longer_4, longer_6, longer_10, longer_13
+
+    def get_all_metrics(self):
+        """
+            Returns a tuple with:
+             (number_chars, number_words, number_sentences, number_syllables, number_polysyllable_words, difficult_words,
+                number_words_longer_4, number_words_longer_6, number_words_longer_10, number_words_longer_longer_13,
+                flesch_reading_ease, flesch_kincaid_grade_level, coleman_liau_index, gunning_fog_index, smog_index,
+                ari_index, lix_index, dale_chall_score)
+        """
+        return self.get_internal_metrics() +\
+                    (self.get_flesch_reading_ease(), self.get_flesch_kincaid_grade_level(), self.get_coleman_liau_index(),
+                     self.get_gunning_fog_index(), self.get_smog_index(), self.get_ari_index(), self.get_lix_index(),
+                     self.get_dale_chall_score()
+                    )
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:

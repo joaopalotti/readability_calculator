@@ -1,2 +1,4 @@
 nltk>=3.0.1
 Pyphen >= 0.9.1
+justext >= 2.2.0
+beautifulsoup4 >= 4.5.0

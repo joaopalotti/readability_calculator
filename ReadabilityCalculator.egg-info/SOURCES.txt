@@ -9,4 +9,5 @@ ReadabilityCalculator.egg-info/requires.txt
 ReadabilityCalculator.egg-info/top_level.txt
 readcalc/__init__.py
 readcalc/dalechallwords.py
+readcalc/preprocessing.py
 readcalc/readcalc.py
