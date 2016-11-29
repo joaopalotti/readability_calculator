@@ -5,6 +5,7 @@ from __future__ import division
 import re
 import math
 import sys
+import bisect
 
 from nltk import tokenize
 from preprocessing import preprocess_html
@@ -29,15 +30,14 @@ class ReadCalc:
                 - bs4 (beautifulsoup4) ---- might result in encoding problems
         """
         try:
-            text = preprocess_html(text, preprocesshtml)
+            self.text = preprocess_html(text, preprocesshtml)
         except Exception as e:
             print "Error %s -- %s" % (type(e), e)
-        self.analyse_text(text)
+            self.text = ""
+        self.analyse_text()
 
     def __repr__(self):
-        ret = ["Text: %s" % (self.__text)]
-        ret.append("Sentences: %s" % (self.__sentences))
-        ret.append("Words: %s" % (self.__words))
+        ret = []
         ret.append("# Sentences: %d" % (self.__number_sentences))
         ret.append("# Words: %d" % (self.__number_words))
         ret.append("# Chars: %d" % (self.__number_chars))
@@ -56,21 +56,28 @@ class ReadCalc:
         return "\n".join(ret)
 
 
-    def analyse_text(self, text):
-        self.__text = text
-        self.__sentences = self.__get_sentences()
-        self.__number_sentences = len(self.__sentences)
+    def analyse_text(self):
+        # Divide text into sentences
+        sentences = self.get_sentences()
+        self.__number_sentences = len(sentences)
 
-        self.__words = self.__get_words()
-        self.__number_words = len(self.__words)
+        # Divide text into words
+        words = self.get_words()
+        self.__number_words = len(words)
 
-        self.__number_chars = self.__get_number_chars()
+        self.__number_chars = self.__get_number_chars(words)
 
         self.__number_syllables, self.__number_polysyllable_words =\
-            self.__get_number_syllables()
+            self.__get_number_syllables(words)
 
-    def __get_sentences(self):
-        sentences = tokenize.sent_tokenize(self.__text)
+        self.__number_words_larger_X = self.__get_word_sizes(words)
+        self.__difficult_words = self.__get_dale_chall_difficult_words(words)
+
+    def get_sentences(self):
+        """
+            Returns a list of all sentences found in the text.
+        """
+        sentences = tokenize.sent_tokenize(self.text)
 
         sentences_only_chars = []
         # Remove sentences containing only punctuation:
@@ -80,10 +87,13 @@ class ReadCalc:
 
         return sentences_only_chars
 
-    def __get_words(self):
+    def get_words(self):
+        """
+            Returns a list of all words found in the text.
+        """
 
         word_tokenizer = tokenize.TreebankWordTokenizer()
-        words = [w.strip() for w in word_tokenizer.tokenize(self.__text) if w.strip()]
+        words = [w.strip().lower() for w in word_tokenizer.tokenize(self.text) if w.strip()]
 
         # Remove punctuation from words:
         # Ex.:  <<This is the final.>>  becomes
@@ -93,34 +103,50 @@ class ReadCalc:
 
         return words
 
-    def __get_number_chars(self):
+    def __get_number_chars(self, words):
         """
             Returns the total number of chars in the text.
         """
         chars = 0
-        for word in self.__words:
+        for word in words:
             chars += len(word)
         return chars
 
-    def __get_number_syllables(self):
+    def __get_number_syllables(self, words):
         dic = pyphen.Pyphen(lang='en')
 
         syllables = 0
         words_3_syllables_more = 0
 
-        for word in self.__words:
+        for word in words:
             syl = len(dic.inserted(word).split("-"))
             syllables += syl
             if syl >= 3:
                 words_3_syllables_more += 1
         return syllables, words_3_syllables_more
 
-    def __get_words_longer_than_X(self, X):
-        word_longer_than_X = 0
-        for word in self.__words:
-            if len(word) > X:
-                word_longer_than_X += 1
-        return word_longer_than_X
+    def __get_word_sizes(self, words):
+        if len(words) == 0:
+            return []
+
+        sizes = [len(word) - 0.5 for word in words]
+        sorted_sizes = sorted(sizes)
+        number_words = len(sizes)
+        larger_size = int(sorted_sizes[-1] + 0.5)
+
+        number_words_larger_X = {}
+
+        for S in xrange(0, larger_size + 1):
+            positionS = bisect.bisect_left(sorted_sizes, S)
+            number_words_larger_X[S] = number_words - positionS
+
+        return number_words_larger_X
+
+    def get_words_longer_than_X(self, X):
+        if len(self.__number_words_larger_X) == 0 or X not in self.__number_words_larger_X:
+            return 0
+
+        return self.__number_words_larger_X[X]
 
     def get_flesch_reading_ease(self):
         # http://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests
@@ -129,7 +155,7 @@ class ReadCalc:
         60.0 - 70.0 - easily understood by 13- to 15-year-old students
         0.00 - 30.0 -  best understood by university graduates
         """
-        if len(self.__sentences) == 0:
+        if self.__number_sentences == 0:
             return 100.0
         return 206.835 - 1.015 * (self.__number_words / self.__number_sentences) - 85.6 * (self.__number_syllables / self.__number_words)
 
@@ -194,11 +220,11 @@ class ReadCalc:
         """
         if self.__number_sentences == 0:
             return 0.0
-        long_words = self.__get_words_longer_than_X(6)
+        long_words = self.get_words_longer_than_X(6)
         return self.__number_words / self.__number_sentences + ((100.0 * long_words) / self.__number_words)
 
-    def __get_dale_chall_difficult_words(self):
-        return len([word for word in self.__words if word not in dale_chall_words])
+    def __get_dale_chall_difficult_words(self, words):
+        return len([word for word in words if word not in dale_chall_words])
 
     def get_dale_chall_score(self):
         # http://en.wikipedia.org/wiki/Dale%E2%80%93Chall_readability_formula
@@ -213,8 +239,7 @@ class ReadCalc:
         """
         if self.__number_sentences == 0:
             return 0.0
-        difficult_words = self.__get_dale_chall_difficult_words()
-        return 0.1579 * (difficult_words / self.__number_words * 100.0) + 0.0496 * (self.__number_words / self.__number_sentences)
+        return 0.1579 * (self.__difficult_words / self.__number_words * 100.0) + 0.0496 * (self.__number_words / self.__number_sentences)
 
     def get_sentences(self):
         """
@@ -234,10 +259,10 @@ class ReadCalc:
              (number_chars, number_words, number_sentences, number_syllables, number_polysyllable_words, difficult_words,
                 number_words_longer_4, number_words_longer_6, number_words_longer_10, number_words_longer_longer_13)
         """
-        longer_4 = self.__get_words_longer_than_X(4)
-        longer_6 = self.__get_words_longer_than_X(6)
-        longer_10 = self.__get_words_longer_than_X(10)
-        longer_13 = self.__get_words_longer_than_X(13)
+        longer_4 = self.get_words_longer_than_X(4)
+        longer_6 = self.get_words_longer_than_X(6)
+        longer_10 = self.get_words_longer_than_X(10)
+        longer_13 = self.get_words_longer_than_X(13)
         difficult_words = self.__get_dale_chall_difficult_words()
         return self.__number_chars, self.__number_words, self.__number_sentences, self.__number_syllables,\
                 self.__number_polysyllable_words, difficult_words, longer_4, longer_6, longer_10, longer_13
