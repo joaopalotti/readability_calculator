@@ -53,6 +53,7 @@ class ReadCalc:
         ret.append("ARI Index: %.3f" % (self.get_ari_index()))
         ret.append("LIX Index: %.3f" % (self.get_lix_index()))
         ret.append("Dale-Chall Score: %.3f" % (self.get_dale_chall_score()))
+        ret.append("Dale-Chall Known Faction: %.3f" % (self.get_dale_chall_known_fraction()))
         return "\n".join(ret)
 
 
@@ -241,17 +242,12 @@ class ReadCalc:
             return 0.0
         return 0.1579 * (self.__difficult_words / self.__number_words * 100.0) + 0.0496 * (self.__number_words / self.__number_sentences)
 
-    def get_sentences(self):
+    def get_dale_chall_known_fraction(self):
         """
-            Returns the number of sentences found in the input text.
+            Computes the fraction of easy words in the text, i.e., the fraction of words that could be found in the
+            dale chall list of 3.000 easy words.
         """
-        return self.__sentences
-
-    def get_words(self):
-        """
-            Returns the number of words found in the input text.
-        """
-        return self.__words
+        return 1.0 - (self.__difficult_words / self.__number_words)
 
     def get_internal_metrics(self):
         """
