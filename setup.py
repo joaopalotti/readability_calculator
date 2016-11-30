@@ -14,7 +14,7 @@ requirements = [
 ]
 
 setup(name='ReadabilityCalculator',
-        version='0.2.2',
+        version='0.2.3',
         author='Joao Palotti',
         author_email='joaopalotti@gmail.com',
         license='LICENSE.txt',

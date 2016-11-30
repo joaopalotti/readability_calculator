@@ -259,9 +259,8 @@ class ReadCalc:
         longer_6 = self.get_words_longer_than_X(6)
         longer_10 = self.get_words_longer_than_X(10)
         longer_13 = self.get_words_longer_than_X(13)
-        difficult_words = self.__get_dale_chall_difficult_words()
         return self.__number_chars, self.__number_words, self.__number_sentences, self.__number_syllables,\
-                self.__number_polysyllable_words, difficult_words, longer_4, longer_6, longer_10, longer_13
+                self.__number_polysyllable_words, self.__difficult_words, longer_4, longer_6, longer_10, longer_13
 
     def get_all_metrics(self):
         """
