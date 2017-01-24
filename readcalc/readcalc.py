@@ -247,6 +247,8 @@ class ReadCalc:
             Computes the fraction of easy words in the text, i.e., the fraction of words that could be found in the
             dale chall list of 3.000 easy words.
         """
+        if self.__number_words == 0:
+            return 0.0
         return 1.0 - (self.__difficult_words / self.__number_words)
 
     def get_internal_metrics(self):
