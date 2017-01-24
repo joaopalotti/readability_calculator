@@ -8,11 +8,11 @@ import sys
 import bisect
 
 from nltk import tokenize
-from preprocessing import preprocess_html
+from .preprocessing import preprocess_html
 
 import pyphen
 
-from dalechallwords import dale_chall_words
+from .dalechallwords import dale_chall_words
 '''
 Author: Joao Palotti <joaopalotti@gmail.com>
 '''
@@ -32,7 +32,7 @@ class ReadCalc:
         try:
             self.text = preprocess_html(text, preprocesshtml)
         except Exception as e:
-            print "Error %s -- %s" % (type(e), e)
+            print(("Error %s -- %s" % (type(e), e)))
             self.text = ""
         self.analyse_text()
 
@@ -137,7 +137,7 @@ class ReadCalc:
 
         number_words_larger_X = {}
 
-        for S in xrange(0, larger_size + 1):
+        for S in range(0, larger_size + 1):
             positionS = bisect.bisect_left(sorted_sizes, S)
             number_words_larger_X[S] = number_words - positionS
 
@@ -280,10 +280,10 @@ class ReadCalc:
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        print "USAGE: python readCalc.py <TEXT>"
+        print("USAGE: python readCalc.py <TEXT>")
         sys.exit(0)
 
     text = ' '.join(sys.argv[1:])
     calculator = ReadCalc(text)
-    print calculator
+    print(calculator)
     calculator.get_flesch_kincaid_grade_level()

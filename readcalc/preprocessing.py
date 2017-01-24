@@ -30,7 +30,7 @@ def preprocess_html(text, preprocessor):
     #    return extractor.getText()
 
     else:
-        print "PRE PROCESSING OPTION %s NOT FOUND. IGNORING PRE PROCESSING."
+        print("PRE PROCESSING OPTION %s NOT FOUND. IGNORING PRE PROCESSING.")
         return text
 
 
