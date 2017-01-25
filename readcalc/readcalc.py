@@ -19,18 +19,23 @@ Author: Joao Palotti <joaopalotti@gmail.com>
 
 class ReadCalc:
 
-    def __init__(self, text, preprocesshtml=None):
+    def __init__(self, text, preprocesshtml=None, forcePeriod=False):
         """
-            ReadCalc(text, preprocesshtml = None).
+            ReadCalc(text, preprocesshtml = None, forcePeriod = False).
 
-            preprocsshtml is used to remove html tags.
+            preprocesshtml is used to remove html tags.
             The current available options are:
 
                 - justext ---- recommended.
                 - bs4 (beautifulsoup4) ---- might result in encoding problems
+
+            forcePeriod is only available when preprocesshtml is used.
+            Options are False (default) and True.
+            In case forcePeriod is active, a period mark will be added to every sentence
+            extracted by the preprocessing html method employed.
         """
         try:
-            self.text = preprocess_html(text, preprocesshtml)
+            self.text = preprocess_html(text, preprocesshtml, forcePeriod)
         except Exception as e:
             print(("Error %s -- %s" % (type(e), e)))
             self.text = ""
