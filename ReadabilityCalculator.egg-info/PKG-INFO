@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: ReadabilityCalculator
-Version: 0.2.33
+Version: 0.2.34
 Summary: Estimate the readability of a text, e.g., the required reading skill level to understand a text.
 Home-page: http://pypi.python.org/pypi/ReadabilityCalculator/
 Author: Joao Palotti

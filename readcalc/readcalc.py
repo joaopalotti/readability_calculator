@@ -45,6 +45,7 @@ class ReadCalc:
         ret = []
         ret.append("# Sentences: %d" % (self.__number_sentences))
         ret.append("# Words: %d" % (self.__number_words))
+        ret.append("# Unique Words: %d" % (self.__number_types))
         ret.append("# Chars: %d" % (self.__number_chars))
         ret.append("# Syllables: %d" % (self.__number_syllables))
         ret.append("# 3 Syllables or more: %d" % (self.__number_polysyllable_words))
@@ -70,6 +71,7 @@ class ReadCalc:
         # Divide text into words
         words = self.get_words()
         self.__number_words = len(words)
+        self.__number_types = len(set(words))
 
         self.__number_chars = self.__get_number_chars(words)
 
@@ -259,23 +261,24 @@ class ReadCalc:
     def get_internal_metrics(self):
         """
             Returns a tuple with:
-             (number_chars, number_words, number_sentences, number_syllables, number_polysyllable_words, difficult_words,
-                number_words_longer_4, number_words_longer_6, number_words_longer_10, number_words_longer_longer_13)
+             (number_chars, number_words, number_types, number_sentences, number_syllables, number_polysyllable_words,
+             difficult_words, number_words_longer_4, number_words_longer_6, number_words_longer_10,
+             number_words_longer_longer_13)
         """
         longer_4 = self.get_words_longer_than_X(4)
         longer_6 = self.get_words_longer_than_X(6)
         longer_10 = self.get_words_longer_than_X(10)
         longer_13 = self.get_words_longer_than_X(13)
-        return self.__number_chars, self.__number_words, self.__number_sentences, self.__number_syllables,\
+        return self.__number_chars, self.__number_words, self.__number_types, self.__number_sentences, self.__number_syllables,\
                 self.__number_polysyllable_words, self.__difficult_words, longer_4, longer_6, longer_10, longer_13
 
     def get_all_metrics(self):
         """
             Returns a tuple with:
-             (number_chars, number_words, number_sentences, number_syllables, number_polysyllable_words, difficult_words,
-                number_words_longer_4, number_words_longer_6, number_words_longer_10, number_words_longer_longer_13,
-                flesch_reading_ease, flesch_kincaid_grade_level, coleman_liau_index, gunning_fog_index, smog_index,
-                ari_index, lix_index, dale_chall_score)
+             (number_chars, number_words, number_types, number_sentences, number_syllables, number_polysyllable_words,
+                difficult_words, number_words_longer_4, number_words_longer_6, number_words_longer_10,
+                number_words_longer_longer_13, flesch_reading_ease, flesch_kincaid_grade_level, coleman_liau_index,
+                gunning_fog_index, smog_index, ari_index, lix_index, dale_chall_score)
         """
         return self.get_internal_metrics() +\
                     (self.get_flesch_reading_ease(), self.get_flesch_kincaid_grade_level(), self.get_coleman_liau_index(),
