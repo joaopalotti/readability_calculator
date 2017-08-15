@@ -1,7 +1,8 @@
 # To clean html
 import justext
 from bs4 import BeautifulSoup
-#from boilerpipe.extract import Extractor
+from boilerpipe.extract import Extractor
+
 
 def preprocess_html(text, preprocessor, forcePeriod):
     """
@@ -12,7 +13,9 @@ def preprocess_html(text, preprocessor, forcePeriod):
         Use continuous to set if you want to force end of sentences.
     """
 
-    if not preprocessor or type(text) != str or len(text.strip()) == 0:
+    if not preprocessor or not (type(text) == str or type(text) == unicode) or len(text.strip()) == 0:
+        print("TEXT IS NOT BEING PRE PROCESSED")
+        print("type(text) == %s ; Size Text: %d" % (type(text), len(text.strip())))
         return text
 
     elif preprocessor == "bs4":
@@ -38,12 +41,17 @@ def preprocess_html(text, preprocessor, forcePeriod):
         return text
 
     # At the moment that this code was updated, boilerpipe was not available for download via pip.
-    #elif preprocessor == "boilerpipe":
-    #    extractor = Extractor(extractor='ArticleExtractor', html=content)
-    #    return extractor.getText()
+    elif preprocessor == "boilerpipe" or preprocessor == "boi":
+        text = Extractor(extractor='ArticleExtractor', html=text).getText()
+        #print("Text before: %s" % text)
+        if forcePeriod:
+            #print("Text after: %s" % text.replace("\n", ".\n"))
+            return text.replace("\n", ".\n")
+        else:
+            return text
 
     else:
-        print("PRE PROCESSING OPTION %s NOT FOUND. IGNORING PRE PROCESSING.")
+        print("PRE PROCESSING OPTION %s NOT FOUND. IGNORING PRE PROCESSING." % (preprocessor))
         return text
 
 

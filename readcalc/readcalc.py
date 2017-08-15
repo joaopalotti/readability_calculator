@@ -17,6 +17,7 @@ from .dalechallwords import dale_chall_words
 Author: Joao Palotti <joaopalotti@gmail.com>
 '''
 
+
 class ReadCalc:
 
     def __init__(self, text, preprocesshtml=None, forcePeriod=False):
@@ -62,7 +63,6 @@ class ReadCalc:
         ret.append("Dale-Chall Known Faction: %.3f" % (self.get_dale_chall_known_fraction()))
         return "\n".join(ret)
 
-
     def analyse_text(self):
         # Divide text into sentences
         sentences = self.get_sentences()
@@ -80,6 +80,12 @@ class ReadCalc:
 
         self.__number_words_larger_X = self.__get_word_sizes(words)
         self.__difficult_words = self.__get_dale_chall_difficult_words(words)
+
+        # Clean up
+        for s in sentences:
+            del s
+        for w in words:
+            del w
 
     def get_sentences(self):
         """
@@ -285,7 +291,7 @@ class ReadCalc:
                      self.get_gunning_fog_index(), self.get_smog_index(), self.get_ari_index(), self.get_lix_index(),
                      self.get_dale_chall_score()
                     )
-
+"""
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print("USAGE: python readCalc.py <TEXT>")
@@ -295,3 +301,4 @@ if __name__ == "__main__":
     calculator = ReadCalc(text)
     print(calculator)
     calculator.get_flesch_kincaid_grade_level()
+"""
