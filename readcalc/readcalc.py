@@ -20,22 +20,32 @@ Author: Joao Palotti <joaopalotti@gmail.com>
 
 class ReadCalc:
 
-    def __init__(self, text, preprocesshtml=None, forcePeriod=False):
+    def __init__(self, text, language="en", preprocesshtml=None, forcePeriod=False):
         """
-            ReadCalc(text, preprocesshtml = None, forcePeriod = False).
+            ReadCalc(text, preprocesshtml = None, language="en", forcePeriod = False).
 
-            preprocesshtml is used to remove html tags.
-            The current available options are:
+            language:
+              Used by the pyphen to break words into syllables.
+              Default is English (en).
+              A full list of all possible languages can be found online at
+              https://github.com/Kozea/Pyphen/tree/master/pyphen/dictionaries
 
-                - justext ---- recommended.
-                - bs4 (beautifulsoup4) ---- might result in encoding problems
+            preprocesshtml:
+              It is used to remove html tags.
+              The current available options are:
 
-            forcePeriod is only available when preprocesshtml is used.
-            Options are False (default) and True.
-            In case forcePeriod is active, a period mark will be added to every sentence
-            extracted by the preprocessing html method employed.
+                - None                  ---- Default, no preprocessing is made.
+                - justext               ---- Recommended to preprocess html.
+                - bs4 (beautifulsoup4)  ---- Watch out for encoding problems.
+
+            forcePeriod:
+              It is only available when preprocesshtml is used.
+              Options are False (default) and True.
+              In case forcePeriod is active, a period mark will be added to every sentence
+              extracted by the preprocessing html method employed.
         """
         try:
+            self.language = language
             self.text = preprocess_html(text, preprocesshtml, forcePeriod)
         except Exception as e:
             print(("Error %s -- %s" % (type(e), e)))
@@ -127,7 +137,7 @@ class ReadCalc:
         return chars
 
     def __get_number_syllables(self, words):
-        dic = pyphen.Pyphen(lang='en')
+        dic = pyphen.Pyphen(lang=self.language)
 
         syllables = 0
         words_3_syllables_more = 0
