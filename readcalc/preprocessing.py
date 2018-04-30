@@ -1,7 +1,7 @@
 # To clean html
 import justext
 from bs4 import BeautifulSoup
-from boilerpipe.extract import Extractor
+# from boilerpipe.extract import Extractor # Boilerpipe is not currently being mantained. Removed till it comes back to live.
 
 
 def preprocess_html(text, preprocessor, forcePeriod):
